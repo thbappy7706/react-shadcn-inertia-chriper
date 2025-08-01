@@ -2,7 +2,9 @@
 
 import { Button } from '@/components/ui/button';
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal,ArrowUpDown } from 'lucide-react';
+import { MoreHorizontal, ArrowUpDown } from 'lucide-react';
+import { router } from '@inertiajs/react';
+import { toast } from 'react-toastify';
 
 import {
     DropdownMenu,
@@ -23,40 +25,32 @@ export type Payment = {
 export const columns: ColumnDef<Payment>[] = [
     {
         accessorKey: 'id',
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    ID
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            >
+                ID
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
     },
-
-
     {
         accessorKey: 'email',
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting()}
-                >
-                    Email
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting()}
+            >
+                Email
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
     },
-
     {
         accessorKey: 'status',
         header: 'Status',
     },
-
     {
         accessorKey: 'amount',
         header: 'Amount',
@@ -70,12 +64,34 @@ export const columns: ColumnDef<Payment>[] = [
             return <div className="font-medium">{formatted}</div>;
         },
     },
-    // ...
     {
         header: 'Actions',
         id: 'actions',
         cell: ({ row }) => {
             const payment = row.original;
+
+            const handleView = () => {
+                router.visit(`/payments/${payment.id}`);
+            };
+
+            const handleEdit = () => {
+                router.visit(`/payments/${payment.id}/edit`);
+            };
+
+            const handleDelete = () => {
+                if (!window.confirm('Are you sure you want to delete this payment?')) {
+                    return;
+                }
+
+                router.delete(`/payments/${payment.id}`, {
+                    onSuccess: () => {
+                        toast.success('Payment deleted successfully');
+                    },
+                    onError: () => {
+                        toast.error('Failed to delete payment');
+                    },
+                });
+            };
 
             return (
                 <DropdownMenu>
@@ -87,14 +103,13 @@ export const columns: ColumnDef<Payment>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>Copy payment ID</DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>View customer</DropdownMenuItem>
-                        <DropdownMenuItem>View payment details</DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleView}>View</DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             );
         },
     },
-    // ...
 ];

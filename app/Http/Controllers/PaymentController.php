@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class PaymentController extends Controller
 {
@@ -35,35 +36,28 @@ class PaymentController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        //
+        $payment = Payment::findOrFail($id);
+        return Inertia::render('payments/Show', [
+            'payment' => $payment,
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-        //
+        $payment = Payment::findOrFail($id);
+        return Inertia::render('payments/Edit', [
+            'payment' => $payment,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        //
+        $payment = Payment::findOrFail($id);
+        $payment->delete();
+
+        return redirect()->route('payments.index')
+            ->with('success', 'Payment deleted successfully.');
     }
 }
