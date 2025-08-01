@@ -125,7 +125,7 @@ export default function Category({categories,flash} :Props) {
                     <Dialog open={isOpen} onOpenChange={setIsOpen}>
                         <form>
                             <DialogTrigger asChild>
-                                <Button variant="outline">
+                                <Button variant="outline" className="bg-primary hover:bg-primary/90 hover:text-gray-100 text-white dark:text-black shadow-lg">
                                     <Plus className="h-4 w-4" />
                                     Add New Category
                                 </Button>

@@ -13,7 +13,7 @@ class CategoryController extends Controller
     public function index()
     {
         return inertia('category/index', [
-            'categories' => Category::query()->get()
+            'categories' => Category::query()->where('user_id',auth()->id())->get()
         ]);
     }
 
