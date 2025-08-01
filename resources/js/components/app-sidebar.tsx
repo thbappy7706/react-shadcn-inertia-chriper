@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid,DollarSignIcon } from 'lucide-react';
+import { BookOpen, DollarSignIcon, Folder, LayoutGrid, Pilcrow, StickyNote } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -18,6 +18,18 @@ const mainNavItems: NavItem[] = [
         title: 'Payments (Tanstack)',
         href: '/payments',
         icon: DollarSignIcon,
+    },
+
+    {
+        title: 'Category',
+        href: '/categories',
+        icon: Pilcrow,
+    },
+
+    {
+        title: 'Posts',
+        href: '/posts',
+        icon: StickyNote,
     },
 ];
 

@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PostController;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -12,7 +14,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
-        return Inertia::render('dashboard',[
+        return Inertia::render('dashboard', [
 
             'stats' => [
                 'users' => User::count(),
@@ -26,9 +28,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->name('dashboard');
 
-    Route::resource('payments', PaymentController::class );
+    Route::resource('payments', PaymentController::class);
+    Route::resource('categories', CategoryController::class);
+    Route::resource('posts', PostController::class);
 
 });
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
