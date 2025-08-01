@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\PaymentController;
+use App\Models\Payment;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -10,7 +12,18 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
+        return Inertia::render('dashboard',[
+
+            'stats' => [
+                'users' => User::count(),
+                'payments' => Payment::count(),
+            ],
+            'chartData' => [
+                'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                'values' => [10, 20, 15, 30, 25],
+            ],
+
+        ]);
     })->name('dashboard');
 
     Route::resource('payments', PaymentController::class );

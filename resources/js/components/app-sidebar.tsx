@@ -15,7 +15,7 @@ const mainNavItems: NavItem[] = [
     },
 
     {
-        title: 'Payments',
+        title: 'Payments (Tanstack)',
         href: '/payments',
         icon: DollarSignIcon,
     },
