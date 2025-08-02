@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Post;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -11,7 +13,10 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        return inertia('posts/index', [
+            'posts' => Post::all(),
+            'categories' => Category::all()
+        ]);
     }
 
     /**
@@ -19,7 +24,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+     return inertia('posts/create', []);
     }
 
     /**
