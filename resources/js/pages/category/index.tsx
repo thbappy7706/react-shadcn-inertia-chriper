@@ -30,6 +30,8 @@ const breadcrumbs: BreadcrumbItem[] = [{ title: 'Category', href: '/categories' 
 export default function Category({ categories, flash }: Props) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+    const [deleteCategoryId, setDeleteCategoryId] = useState<number | null>(null);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
 
     useEffect(() => {
         if (flash?.success) {
@@ -73,16 +75,20 @@ export default function Category({ categories, flash }: Props) {
         setIsOpen(true);
     };
 
-    const handleDelete = (id: number) => {
-        router.delete(`/categories/${id}`, {
-            onSuccess: () => {
-                router.reload();
-                console.log('success');
-            },
-            onError: () => {
-                console.error('Failed to delete post.');
-            },
-        });
+    const handleDeleteConfirm = () => {
+        if (deleteCategoryId !== null) {
+            router.delete(`/categories/${deleteCategoryId}`, {
+                onSuccess: () => {
+                    setIsDeleteDialogOpen(false);
+                    setDeleteCategoryId(null);
+                    router.reload();
+                    console.log('Deleted successfully');
+                },
+                onError: () => {
+                    console.error('Failed to delete post.');
+                },
+            });
+        }
     };
 
     return (
@@ -133,14 +139,19 @@ export default function Category({ categories, flash }: Props) {
                                     <Button variant="ghost" size="icon" onClick={() => handleEdit(category)}>
                                         <Pencil className="h-4 w-4" />
                                     </Button>
+
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        onClick={() => handleDelete(category.id)}
+                                        onClick={() => {
+                                            setDeleteCategoryId(category.id);
+                                            setIsDeleteDialogOpen(true);
+                                        }}
                                         className="text-destructive hover:text-destructive/90"
                                     >
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
+
                                 </div>
                             </CardHeader>
                             <CardContent>
@@ -151,6 +162,20 @@ export default function Category({ categories, flash }: Props) {
                         </Card>
                     ))}
                 </div>
+
+                <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                    <DialogContent className="sm:max-w-[500px]">
+                        <DialogHeader>
+                            <DialogTitle>Confirm Deletion</DialogTitle>
+                            <DialogDescription>Are you sure you want to delete this category? This action cannot be undone.</DialogDescription>
+                        </DialogHeader>
+                        <div className="flex justify-end gap-2 pt-4">
+                            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
+                            <Button variant="destructive" onClick={handleDeleteConfirm}>Delete</Button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+
             </div>
         </AppLayout>
     );
