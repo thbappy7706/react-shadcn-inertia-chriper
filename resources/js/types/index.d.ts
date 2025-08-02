@@ -20,6 +20,8 @@ export interface NavItem {
     href: string;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    prefetch?: boolean | 'hover' | 'visible' | 'click';
+
 }
 
 export interface SharedData {

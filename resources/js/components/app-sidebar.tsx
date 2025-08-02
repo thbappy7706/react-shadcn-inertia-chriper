@@ -24,6 +24,7 @@ const mainNavItems: NavItem[] = [
         title: 'Category',
         href: '/categories',
         icon: Pilcrow,
+        prefetch: "click",
     },
 
     {
