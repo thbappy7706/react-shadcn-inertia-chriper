@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal, ArrowUpDown } from 'lucide-react';
 import { router } from '@inertiajs/react';
-import { toast } from 'react-toastify';
 
 import {
     DropdownMenu,
@@ -85,10 +84,10 @@ export const columns: ColumnDef<Payment>[] = [
 
                 router.delete(`/payments/${payment.id}`, {
                     onSuccess: () => {
-                        toast.success('Payment deleted successfully');
+
                     },
                     onError: () => {
-                        toast.error('Failed to delete payment');
+
                     },
                 });
             };
