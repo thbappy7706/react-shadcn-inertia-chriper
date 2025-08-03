@@ -5,6 +5,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { EllipsisVertical, Plus } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { useEffect } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Posts', href: '/posts' }];
 
@@ -40,6 +42,12 @@ interface Props {
 }
 
 export default function PostIndex({ posts, flash }: Props) {
+
+    useEffect(() => {
+        if (flash?.success) toast.success(flash.success);
+        if (flash?.error) toast.error(flash.error);
+    }, [flash?.success, flash?.error]);
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Posts" />

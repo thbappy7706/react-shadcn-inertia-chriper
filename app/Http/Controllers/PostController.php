@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class PostController extends Controller
 {
@@ -24,7 +27,14 @@ class PostController extends Controller
      */
     public function create()
     {
-     return inertia('posts/create', []);
+        $categories = Category::where('user_id', auth()->id())->get();
+        return Inertia::render('posts/create', [
+            'categories' => $categories,
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error')
+            ]
+        ]);
     }
 
     /**
@@ -32,7 +42,24 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
+            'status' => 'boolean',
+            'picture' => 'required|image',
+        ]);
+
+        $title = $request->input('title');
+        $validated['slug'] = Str::slug($title);
+
+        if ($request->hasFile('picture')) {
+            $validated['picture'] = Storage::disk('public')->put('posts', $request->file('picture'));
+        }
+
+        Post::create($validated);
+
+        return redirect()->route('posts.index')->with('success', 'Post created successfully!');
     }
 
     /**
