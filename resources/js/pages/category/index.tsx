@@ -6,7 +6,14 @@ import { Pencil, Plus, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'react-toastify';
@@ -40,7 +47,7 @@ export default function Category({ categories, flash }: Props) {
         if (flash?.error) {
             toast.error(flash.error);
         }
-    }, [flash?.success, flash?.error]);
+    }, [flash]);
 
     const { data, setData, post, put, processing, reset } = useForm({
         title: '',
@@ -49,43 +56,46 @@ export default function Category({ categories, flash }: Props) {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (editingCategory) {
-            console.log('updated');
             put(route('categories.update', editingCategory.id), {
+                preserveScroll: true,
                 onSuccess: () => {
                     setIsOpen(false);
                     reset();
                     setEditingCategory(null);
+                    router.reload({ only: ['flash'] });
                 },
             });
         } else {
             post(route('categories.store'), {
+                preserveScroll: true,
                 onSuccess: () => {
                     setIsOpen(false);
                     reset();
+                    router.reload({ only: ['flash'] });
                 },
             });
         }
     };
 
-    const handleEdit = (categories: Category) => {
-        setEditingCategory(categories);
+    const handleEdit = (category: Category) => {
+        setEditingCategory(category);
         setData({
-            title: categories.title,
+            title: category.title,
         });
         setIsOpen(true);
     };
 
     const handleDeleteConfirm = () => {
         if (deleteCategoryId !== null) {
-            router.delete(`/categories/${deleteCategoryId}`, {
+            router.delete(route('categories.destroy', deleteCategoryId), {
+                preserveScroll: true,
                 onSuccess: () => {
                     setIsDeleteDialogOpen(false);
                     setDeleteCategoryId(null);
-                    router.reload();
-                    console.log('Deleted successfully');
+                    router.reload({ only: ['flash'] });
                 },
                 onError: () => {
-                    console.error('Failed to delete post.');
+                    toast.error('Failed to delete category.');
                 },
             });
         }
@@ -111,13 +121,24 @@ export default function Category({ categories, flash }: Props) {
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[600px]">
                                 <DialogHeader>
-                                    <DialogTitle>Create New Category</DialogTitle>
-                                    <DialogDescription>Make changes to your category here. Click save when you&apos;re done.</DialogDescription>
+                                    <DialogTitle>
+                                        {editingCategory ? 'Edit Category' : 'Create New Category'}
+                                    </DialogTitle>
+                                    <DialogDescription>
+                                        {editingCategory
+                                            ? 'Update your category details.'
+                                            : 'Enter a title for the new category.'}
+                                    </DialogDescription>
                                 </DialogHeader>
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="name-1">Title</Label>
-                                        <Input id="title" value={data.title} required onChange={(e) => setData('title', e.target.value)} />
+                                        <Label htmlFor="title">Title</Label>
+                                        <Input
+                                            id="title"
+                                            value={data.title}
+                                            required
+                                            onChange={(e) => setData('title', e.target.value)}
+                                        />
                                     </div>
 
                                     <Button className="float-end" type="submit" disabled={processing}>
@@ -151,12 +172,13 @@ export default function Category({ categories, flash }: Props) {
                                     >
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
-
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 {category.posts_count !== undefined && (
-                                    <p className="mt-2 text-sm text-muted-foreground">{category.posts_count} Category</p>
+                                    <p className="mt-2 text-sm text-muted-foreground">
+                                        {category.posts_count} Category
+                                    </p>
                                 )}
                             </CardContent>
                         </Card>
@@ -167,15 +189,20 @@ export default function Category({ categories, flash }: Props) {
                     <DialogContent className="sm:max-w-[500px]">
                         <DialogHeader>
                             <DialogTitle>Confirm Deletion</DialogTitle>
-                            <DialogDescription>Are you sure you want to delete this category? This action cannot be undone.</DialogDescription>
+                            <DialogDescription>
+                                Are you sure you want to delete this category? This action cannot be undone.
+                            </DialogDescription>
                         </DialogHeader>
                         <div className="flex justify-end gap-2 pt-4">
-                            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
-                            <Button variant="destructive" onClick={handleDeleteConfirm}>Delete</Button>
+                            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button variant="destructive" onClick={handleDeleteConfirm}>
+                                Delete
+                            </Button>
                         </div>
                     </DialogContent>
                 </Dialog>
-
             </div>
         </AppLayout>
     );
