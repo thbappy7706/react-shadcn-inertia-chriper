@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-import React, { FormEventHandler, useEffect, useState } from 'react';
+import React, { FormEventHandler, useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Posts Create', href: route('posts.create') }];
