@@ -7,19 +7,105 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Exception;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+//    public function index()
+//    {
+//        $products = Product::query()->latest()->paginate(5);
+//        $products->getCollection()->transform(fn($product) => [
+//            'id' => $product->id,
+//            'name' => Str::title($product->name),
+//            'description' => Str::limit($product->description, 50, '...'),
+//            'price' => $product->price,
+//            'featured_image' => $product->featured_image,
+//            'featured_image_original_name' => $product->featured_image_original_name,
+//            'created_at' => $product->created_at->format('d M Y'),
+//        ]);
+//
+//        return inertia('products/index', [
+//            'products' => $products
+//        ]);
+//    }
+
+    public function index(Request $request)
     {
-        $products = Product::query()->latest()->get();
+        // Initialize the query builder for products
+        $productsQuery = Product::query();
+
+        // Apply search filter if the 'search' request is filled
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $productsQuery->where(fn($query) =>
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%")
+                ->orWhere('price', 'like', "%{$search}%")
+            );
+        }
+
+        // Get the total count of products before applying pagination
+        $totalCount = $productsQuery->count();
+
+
+        $perPage = (int) ($request->perPage ?? 5);
+
+        // Check if 'perPage' is -1, meaning we want to fetch all products
+        if ($perPage === -1) {
+            $products = $productsQuery->latest()->get()->map(fn($product) => [
+                'id'                           => $product->id,
+                'name'                         => $product->name,
+                'description'                  => $product->description,
+                'price'                        => $product->price,
+                'featured_image'               => $product->featured_image,
+                'featured_image_original_name' => $product->featured_image_original_name,
+                'created_at'                   => $product->created_at->format('d M Y'),
+            ]);
+            // Prepare the full response with all products
+            return inertia('products/index', [
+                'products'      => [
+                    'data'     => $products,
+                    'total'    => $totalCount,
+                    'per_page' => $perPage,
+                    'from'     => 1,
+                    'to'       => $totalCount,
+                    'links'    => [],
+                ],
+                'filters'       => $request->only(['search', 'perPage']),
+                'totalCount'    => $totalCount,
+                'filteredCount' => $totalCount,
+            ]);
+        }
+
+        // Paginate the results if perPage is not -1
+        $products = $productsQuery->latest()->paginate($perPage)->withQueryString();
+
+        // Transform the paginated results
+        $products->getCollection()->transform(fn($product) => [
+            'id'                           => $product->id,
+            'name'                         => $product->name,
+            'description'                  => $product->description,
+            'price'                        => $product->price,
+            'featured_image'               => $product->featured_image,
+            'featured_image_original_name' => $product->featured_image_original_name,
+            'created_at'                   => $product->created_at->format('d M Y'),
+        ]);
+
+        // Get the filtered count after the search
+        $filteredCount = $productsQuery->count();
+
+        // Return the final response for paginated products
         return inertia('products/index', [
-            'products' => $products
+            'products'      => $products,
+            'filters'       => $request->only(['search', 'perPage']),
+            'totalCount'    => $totalCount,
+            'filteredCount' => $filteredCount,
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.

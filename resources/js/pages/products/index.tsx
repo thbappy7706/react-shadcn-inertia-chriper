@@ -1,33 +1,61 @@
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { EllipsisVertical, Plus } from 'lucide-react';
+import { EllipsisVertical, Plus, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Pagination } from '@/components/ui/pagination';
+import { Input } from '@headlessui/react';
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Products', href: '/products' }];
 
+
+
+interface LinkProps {
+    active: boolean;
+    label: string;
+    url: string;
+}
 interface Product {
     id: number;
     name: string;
     description: string;
     price: string;
     featured_image: string;
+    featured_image_original_name: string;
     created_at: string;
 }
 
-export default function Index({ ...props }: { products: Product[] }) {
+interface ProductPagination {
+    data: Product[];
+    links: LinkProps[];
+    from: number;
+    to: number;
+    total: number;
+}
+interface FilterProps {
+    search: string;
+    perPage: string;
+}
+
+interface IndexProps {
+    products: ProductPagination;
+    filters: FilterProps;
+    totalCount: number;
+    filteredCount: number;
+}
+
+export default function Index({  products, filters, totalCount, filteredCount }: IndexProps) {
     const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:8084/';
 
-    const { products } = props;
+
     const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
-
 
     useEffect(() => {
         if (flash?.success) {
@@ -36,6 +64,58 @@ export default function Index({ ...props }: { products: Product[] }) {
             toast.error(flash.error);
         }
     }, [flash]);
+
+
+    const { data, setData } = useForm({
+        search: filters.search || '',
+        perPage: filters.perPage || '10',
+    });
+
+    // Handle Change for the Search Input
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setData('search', value);
+
+        const queryString = {
+            ...(value && { search: value }),
+            ...(data.perPage && { perPage: data.perPage }),
+        };
+
+        router.get(route('products.index'), queryString, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    // To Reset Applied Filter
+    const handleReset = () => {
+        setData('search', '');
+        setData('perPage', '10');
+
+        router.get(
+            route('products.index'),
+            {},
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
+    };
+
+    // Handle Per Page Change
+    const handlePerPageChange = (value: string) => {
+        setData('perPage', value);
+
+        const queryString = {
+            ...(data.search && { search: data.search }),
+            ...(value && { perPage: value }),
+        };
+
+        router.get(route('products.index'), queryString, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
 
 
     const handleDeleteConfirm = () => {
@@ -59,17 +139,42 @@ export default function Index({ ...props }: { products: Product[] }) {
             <Head title="Manage Products" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between w-full space-x-4">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Products</h1>
+                        <h1 className="text-xl font-bold tracking-tight">Products</h1>
                         <p className="mt-1 text-muted-foreground">Manage Your Products</p>
                     </div>
 
+                    <div className="flex items-center space-x-2 w-full max-w-3xl">
+                        <Input
+                            type="text"
+                            value={data.search}
+                            onChange={handleChange}
+                            className="flex-1 p-1.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200"
+                            placeholder="Search Products..."
+                            name="search"
+                        />
+                        <Button
+                            onClick={handleReset}
+                            className="h-8 p-1.5 bg-teal-600 hover:bg-gray-950 text-white rounded-lg flex-shrink-0"
+                        >
+                            <X size={16} />
+                        </Button>
+
+                    </div>
+
                     <Button variant="outline" className="bg-primary text-white shadow-lg hover:bg-primary/90 hover:text-gray-100 dark:text-black">
-                        <Plus className="h-4 w-4" />
+                        <Plus className="h-2 w-2" />
                         <Link href={route('products.create')}>Add New Products</Link>
                     </Button>
                 </div>
+
+
+
+
+
+
+
 
                 <div className="rounded-md border">
                     <div className="relative w-full overflow-auto">
@@ -86,7 +191,7 @@ export default function Index({ ...props }: { products: Product[] }) {
                                 </tr>
                             </thead>
                             <tbody className="[&_tr:last-child]:border-0">
-                                {products.map((row, index) => (
+                                {products.data.map((row, index) => (
                                     <tr key={index} className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                                         <td className="p-4 align-middle font-medium">{index + 1}</td>
                                         <td className="p-4 align-middle font-medium">{row.name}</td>
@@ -113,10 +218,12 @@ export default function Index({ ...props }: { products: Product[] }) {
                                                     <DropdownMenuItem>
                                                         <Link href={route('products.edit', row.id)}>Edit</Link>
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem  onClick={() => {
-                                                        setDeleteId(row.id);
-                                                        setIsDeleteDialogOpen(true);
-                                                    }}>
+                                                    <DropdownMenuItem
+                                                        onClick={() => {
+                                                            setDeleteId(row.id);
+                                                            setIsDeleteDialogOpen(true);
+                                                        }}
+                                                    >
                                                         Delete
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
@@ -128,14 +235,20 @@ export default function Index({ ...props }: { products: Product[] }) {
                         </table>
                     </div>
                 </div>
+                <Pagination
+                    datas={products}
+                    perPage={data.perPage}
+                    onPerPageChange={handlePerPageChange}
+                    totalCount={totalCount}
+                    filteredCount={filteredCount}
+                    search={data.search}
+                />
 
                 <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                     <DialogContent className="sm:max-w-[500px]">
                         <DialogHeader>
                             <DialogTitle>Confirm Deletion</DialogTitle>
-                            <DialogDescription>
-                                Are you sure you want to delete this Product? This action cannot be undone.
-                            </DialogDescription>
+                            <DialogDescription>Are you sure you want to delete this Product? This action cannot be undone.</DialogDescription>
                         </DialogHeader>
                         <div className="flex justify-end gap-2 pt-4">
                             <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
@@ -147,7 +260,6 @@ export default function Index({ ...props }: { products: Product[] }) {
                         </div>
                     </DialogContent>
                 </Dialog>
-
             </div>
         </AppLayout>
     );
