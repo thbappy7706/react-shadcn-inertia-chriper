@@ -111,6 +111,25 @@ export default function ProductForm({ ...props }) {
                                 </div>
 
 
+                                {/* Product Featured image */}
+                                {!isView && (
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="featured_image">Featured Image</Label>
+
+                                        <Input
+                                            onChange={handleFileUpload}
+                                            id="featured_image"
+                                            name="featured_image"
+                                            type="file"
+                                            autoFocus
+                                            tabIndex={4}
+                                        />
+
+                                        <InputError message={errors.featured_image} />
+                                    </div>
+                                )}
+
+                                {/* Display featured image */}
                                 {(isView || isEdit) && product.featured_image && (
                                     <div className="grid gap-2">
                                         <Label htmlFor="featured_image">Current Featured Image</Label>
