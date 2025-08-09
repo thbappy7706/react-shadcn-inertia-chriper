@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\ProductController;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('payments', PaymentController::class);
     Route::resource('categories', CategoryController::class);
     Route::resource('posts', PostController::class);
+    Route::resource('products', ProductController::class);
 
 });
 
