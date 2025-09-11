@@ -38,6 +38,11 @@ const mainNavItems: NavItem[] = [
         href: '/products',
         icon: ShoppingBagIcon,
     },
+    {
+        title: 'Customers',
+        href: '/customers',
+        icon: StickyNote,
+    },
 ];
 
 const footerNavItems: NavItem[] = [
