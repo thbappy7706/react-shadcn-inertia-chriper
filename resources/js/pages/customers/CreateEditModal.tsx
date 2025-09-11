@@ -162,13 +162,13 @@ export default function CreateEditModal({ open, onOpenChange, initial }: CreateE
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[1000px]">
+            <DialogContent className="sm:max-w-[1400px]">
                 <DialogHeader>
                     <DialogTitle>{isEdit ? 'Edit Customer' : 'Add Customer'}</DialogTitle>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-                    <div className="grid gap-2 md:grid-cols-2">
+                    <div className="grid gap-2 md:grid-cols-3">
                         {stringFields.map(([field, label, type = 'text']) => (
                             <div key={field}>
                                 <Label htmlFor={field}>{label}</Label>
