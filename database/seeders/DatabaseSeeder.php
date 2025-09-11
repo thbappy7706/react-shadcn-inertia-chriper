@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Customer;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\User;
@@ -18,6 +19,7 @@ class DatabaseSeeder extends Seeder
         Product::factory()->count(5000)->create();
 
         Payment::factory(500)->create();
+        Customer::factory(500)->create();
 
         User::factory()->create([
             'name' => 'Test User',
