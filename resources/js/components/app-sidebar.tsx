@@ -28,12 +28,6 @@ const mainNavItems: NavItem[] = [
     },
 
     {
-        title: 'Posts',
-        href: '/posts',
-        icon: StickyNote,
-    },
-
-    {
         title: 'Products List',
         href: '/products',
         icon: ShoppingBagIcon,

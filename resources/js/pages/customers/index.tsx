@@ -6,7 +6,7 @@ import type { BreadcrumbItem } from "@/types";
 import DataTable from "@/components/ui/DataTable";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import CreateEditModal from "./CreateEditModal";
+import CreateEditModal, { Customer } from './CreateEditModal';
 import ViewDrawer from "./ViewDrawer";
 import { Plus, X } from "lucide-react";
 import { toast } from "react-toastify";
@@ -49,6 +49,25 @@ export default function Index({ customers, filters }: IndexProps) {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [currentCustomer, setCurrentCustomer] = useState<CustomerRow | null>(null);
+
+    const mapCustomerRowToCustomer = (customerRow: CustomerRow | null): Customer | null => {
+        if (!customerRow) return null;
+        const nameParts = customerRow.name?.split(' ') || ['', ''];
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+
+        return {
+            id: customerRow.id,
+            first_name: firstName,
+            last_name: lastName,
+            email: customerRow.email,
+            phone: customerRow.phone ?? undefined, // Convert null to undefined
+            city: customerRow.city ?? undefined,
+            country: customerRow.country ?? undefined,
+            is_active: customerRow.is_active,
+
+        };
+    };
 
     useEffect(() => {
         if (flash?.success) {
@@ -264,7 +283,12 @@ export default function Index({ customers, filters }: IndexProps) {
                     </DialogContent>
                 </Dialog>
 
-                <CreateEditModal open={isFormOpen} onOpenChange={setIsFormOpen} initial={currentCustomer} />
+
+                <CreateEditModal
+                    open={isFormOpen}
+                    onOpenChange={setIsFormOpen}
+                    initial={mapCustomerRowToCustomer(currentCustomer)}
+                />
                 <ViewDrawer open={isViewOpen} onOpenChange={setIsViewOpen} customer={currentCustomer} />
             </div>
         </AppLayout>
