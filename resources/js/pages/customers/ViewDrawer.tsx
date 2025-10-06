@@ -4,7 +4,7 @@ import React from 'react';
 interface ViewDrawerProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    customer: any | null;
+    customer: Record<string, unknown> | null;
 }
 
 export default function ViewDrawer({ open, onOpenChange, customer }: ViewDrawerProps) {

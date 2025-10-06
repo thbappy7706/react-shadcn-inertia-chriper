@@ -4,16 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CustomerRequest;
 use App\Models\Customer;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $query = Customer::query();
 
@@ -89,7 +90,7 @@ class CustomerController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): Response
     {
         return Inertia::render('customers/customer-form');
     }
@@ -97,7 +98,7 @@ class CustomerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CustomerRequest $request)
+    public function store(CustomerRequest $request): \Illuminate\Http\RedirectResponse
     {
         $customer = Customer::create($request->validated());
         if ($customer) {
@@ -110,7 +111,7 @@ class CustomerController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Customer $customer)
+    public function show(Customer $customer): Response
     {
         return Inertia::render('customers/customer-form', [
             'customer' => $customer,
@@ -121,7 +122,7 @@ class CustomerController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Customer $customer)
+    public function edit(Customer $customer): Response
     {
         return Inertia::render('customers/customer-form', [
             'customer' => $customer,
@@ -132,7 +133,7 @@ class CustomerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(CustomerRequest $request, Customer $customer)
+    public function update(CustomerRequest $request, Customer $customer): \Illuminate\Http\RedirectResponse
     {
         $customer->update($request->validated());
 
@@ -142,7 +143,7 @@ class CustomerController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Customer $customer)
+    public function destroy(Customer $customer): \Illuminate\Http\RedirectResponse
     {
         $customer->delete();
 

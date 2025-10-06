@@ -18,8 +18,8 @@ class CustomerRequest extends FormRequest
         return [
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
-            'username' => ['nullable', 'string', 'max:255', 'unique:customers,username,'.($id ?? 'null')],
-            'email' => ['required', 'email', 'max:255', 'unique:customers,email,'.($id ?? 'null')],
+            'username' => ['nullable', 'string', 'max:255', 'unique:customers,username,'.($id ?? '')],
+            'email' => ['required', 'email', 'max:255', 'unique:customers,email,'.($id ?? '')],
             'phone' => ['nullable', 'string', 'max:255'],
             'street_address' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:255'],
@@ -41,4 +41,3 @@ class CustomerRequest extends FormRequest
         ];
     }
 }
-

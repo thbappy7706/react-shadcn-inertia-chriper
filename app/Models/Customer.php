@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Customer extends Model
 {
     /** @use HasFactory<\Database\Factories\CustomerFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'first_name',
@@ -36,10 +37,10 @@ class Customer extends Model
     ];
 
     protected $casts = [
-        'date_of_birth'   => 'date',
-        'last_login_at'   => 'datetime',
+        'date_of_birth' => 'date',
+        'last_login_at' => 'datetime',
         'account_balance' => 'decimal:2',
-        'is_active'       => 'boolean',
-        'extra_info'      => 'array',
+        'is_active' => 'boolean',
+        'extra_info' => 'array',
     ];
 }

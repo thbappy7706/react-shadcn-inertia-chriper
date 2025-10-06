@@ -106,24 +106,56 @@ export default function CreateEditModal({ open, onOpenChange, initial }: CreateE
         if (!open) reset();
     }, [open, reset]);
 
+    const appendFormData = (fd: FormData, key: string, value: unknown): void => {
+        if (value === undefined || value === null) {
+            return;
+        }
+        if (value instanceof File) {
+            fd.append(key, value);
+            return;
+        }
+        if (Array.isArray(value)) {
+            value.forEach((v, i) => {
+                appendFormData(fd, `${key}[${i}]`, v);
+            });
+            return;
+        }
+        if (typeof value === 'object') {
+            Object.entries(value as Record<string, unknown>).forEach(([k, v]) => {
+                appendFormData(fd, `${key}[${k}]`, v);
+            });
+            return;
+        }
+        if (typeof value === 'boolean') {
+            fd.append(key, value ? '1' : '0');
+            return;
+        }
+        fd.append(key, String(value));
+    };
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const formData = new FormData();
         Object.entries(data).forEach(([key, rawValue]) => {
-            if (rawValue == null) return;
-
-            if (key === 'extra_info' && typeof rawValue === 'string' && rawValue) {
-                try {
-                    formData.append(key, JSON.stringify(JSON.parse(rawValue)));
-                } catch {
-                    formData.append(key, rawValue);
-                }
-            } else if (typeof rawValue === 'boolean') {
-                formData.append(key, rawValue ? '1' : '0');
-            } else {
-                formData.append(key, String(rawValue));
+            if (rawValue == null) {
+                return;
             }
+
+            if (key === 'extra_info') {
+                if (typeof rawValue === 'string' && rawValue.trim() !== '') {
+                    try {
+                        const parsed = JSON.parse(rawValue);
+                        appendFormData(formData, 'extra_info', parsed);
+                    } catch {
+                        // If invalid JSON, send as plain string so validation can fail gracefully
+                        formData.append('extra_info', rawValue);
+                    }
+                }
+                return;
+            }
+
+            appendFormData(formData, key, rawValue as unknown);
         });
 
         const url = isEdit && initial?.id ? route('customers.update', initial.id) : route('customers.store');
