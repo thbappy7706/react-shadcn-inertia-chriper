@@ -289,7 +289,7 @@ export default function Index({ customers, filters }: IndexProps) {
                     onOpenChange={setIsFormOpen}
                     initial={mapCustomerRowToCustomer(currentCustomer)}
                 />
-                <ViewDrawer open={isViewOpen} onOpenChange={setIsViewOpen} customer={currentCustomer} />
+                {/*<ViewDrawer open={isViewOpen} onOpenChange={setIsViewOpen} customer={currentCustomer} />*/}
             </div>
         </AppLayout>
     );
