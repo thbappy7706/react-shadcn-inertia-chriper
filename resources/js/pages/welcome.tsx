@@ -1,5 +1,7 @@
+import '../../css/guest.css';
 import { Head } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
+
 
 export default function Welcome() {
     const [currentPage, setCurrentPage] = useState('home');
