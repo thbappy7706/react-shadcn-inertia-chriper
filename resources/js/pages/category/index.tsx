@@ -17,6 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'react-toastify';
+import CategoryController from '@/actions/App/Http/Controllers/CategoryController';
 
 interface Category {
     id: number;
@@ -56,7 +57,7 @@ export default function Category({ categories, flash }: Props) {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (editingCategory) {
-            put(route('categories.update', editingCategory.id), {
+            put(CategoryController.update(editingCategory.id).url, {
                 preserveScroll: true,
                 onSuccess: () => {
                     setIsOpen(false);
@@ -66,7 +67,7 @@ export default function Category({ categories, flash }: Props) {
                 },
             });
         } else {
-            post(route('categories.store'), {
+            post(CategoryController.store().url, {
                 preserveScroll: true,
                 onSuccess: () => {
                     setIsOpen(false);
