@@ -135,7 +135,140 @@
         @apply border-border;
     }
 
+    html {
+        scroll-behavior: smooth;
+    }
+
     body {
         @apply bg-background text-foreground;
     }
+}
+
+/* Welcome page specific utilities */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Local CSS variables for Welcome page theme */
+:root {
+    /* Dark mode (default) */
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #1a1a1a;
+    --bg-card: rgba(255, 255, 255, 0.05);
+    --bg-card-hover: rgba(255, 255, 255, 0.1);
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0a0;
+    --text-tertiary: #6b7280;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --accent-color: #3b82f6;
+}
+
+body.light-mode {
+    /* Light mode */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f5;
+    --bg-card: rgba(0, 0, 0, 0.05);
+    --bg-card-hover: rgba(0, 0, 0, 0.1);
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-tertiary: #6b7280;
+    --border-color: rgba(0, 0, 0, 0.1);
+    --accent-color: #2563eb;
+}
+
+.welcome-page {
+    font-family: 'Inter', var(--font-sans), sans-serif;
+}
+
+/* Background gradient helper */
+body:not(.light-mode) #gradient-bg {
+    background:
+        radial-gradient(ellipse 110% 70% at 25% 80%, rgba(147, 51, 234, 0.12), transparent 55%),
+        radial-gradient(ellipse 130% 60% at 75% 15%, rgba(59, 130, 246, 0.10), transparent 65%),
+        radial-gradient(ellipse 80% 90% at 20% 30%, rgba(236, 72, 153, 0.14), transparent 50%),
+        radial-gradient(ellipse 100% 40% at 60% 70%, rgba(16, 185, 129, 0.08), transparent 45%),
+        var(--bg-primary);
+    opacity: 1;
+    z-index: -1;
+    pointer-events: none;
+    transition: opacity 0.4s;
+}
+
+body.light-mode #gradient-bg {
+    opacity: 0;
+}
+
+body.light-mode {
+    background: var(--bg-primary) !important;
+}
+
+#theme-toggle.dark-mode {
+    background-color: var(--bg-card);
+}
+#theme-toggle.dark-mode:hover {
+    background-color: var(--bg-card-hover);
+}
+#theme-toggle.light-mode {
+    background-color: var(--bg-card);
+}
+#theme-toggle.light-mode:hover {
+    background-color: var(--bg-card-hover);
+}
+
+/* Page transitions */
+.page-enter-active,
+.page-leave-active {
+    transition: all 0.4s;
+}
+
+.page-enter-from,
+.page-leave-to {
+    opacity: 0;
+    filter: blur(1rem);
+}
+
+.page-hidden {
+    display: none;
+}
+
+/* Nav link hover and transitions */
+.nav-link {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-link:hover {
+    color: #ffffff;
+}
+
+/* Image card hover */
+.image-card {
+    transition: all 0.3s ease;
+}
+
+.image-card:hover {
+    transform: translateY(-8px) scale(1.02);
+}
+
+/* Accordion */
+.accordion-button {
+    transition: all 0.3s ease;
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.accordion-content.active {
+    max-height: 200px;
+}
+
+/* Dots */
+.dot {
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background-color: #ffffff;
+    width: 2rem;
 }
